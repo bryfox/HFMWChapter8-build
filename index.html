@@ -4,7 +4,11 @@
     <meta charset="utf-8">
 	  <meta name="viewport" content="width=device-width, initial-scale=1"> 
     <link rel="stylesheet" href="style/jquery.mobile-1.0rc2.min.css" />
-    <script src="phonegap.js"></script>
+
+    <!-- <script src="http://10.1.10.181:8080/target/target-script-min.js#anonymous"></script> -->
+
+    <!-- <script src="phonegap.js"></script> -->
+
     <script src="scripts/jquery-1.7.min.js"></script>
     <script src="scripts/app.js"></script>
     <script src="scripts/jquery.mobile-1.0rc2.min.js"></script>
@@ -18,6 +22,8 @@
         <a href="#" id="camera" data-icon="star" class="ui-btn-right">Camera</a>
       </div>
       <div data-role="content">
+        <input type="file" accept="image/*" capture="camera" id="capture"> 
+
       <p>There will be content here.</p>
         <ul data-role="listview" data-inset="true">
           <li><h3>C340</h3>

@@ -33,6 +33,5 @@ function onDeviceReady () {
     }
   };
 
-  alert(navigator.device)
   $('#camera').on('click', captureImage);
 }
