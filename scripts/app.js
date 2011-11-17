@@ -1,37 +1,76 @@
-$(document).bind("mobileinit", function() {
-  $.extend($.mobile, {
-    defaultPageTransition: 'none'
+(function() {
+  var imageCaptureSupported = false;
+  $(document).bind("mobileinit", function() {
+    $.extend($.mobile, { defaultPageTransition: 'none' });
+    $.mobile.page.prototype.options.addBackBtn = true;
   });
-});
 
-if (typeof phonegap != 'undefined') {
-  document.addEventListener("deviceready", onDeviceReady, false);
-} else {
-  $(document).ready(onDeviceReady);
-}
-
-function onDeviceReady () {
-  var captureSuccess = function(mediaFiles) {
-    var i, src;
-    for (i in mediaFiles) {
-      // Check for the W3C property `url` first.
-      // If not found, try PhoneGap's `fullPath` property (correct as of 1.2)
-      src = data[i].url || data[i].fullPath
-      if (src) $('body').append($('img').attr('src', src));
-    }
-  }
-
-  var captureError = function(error) {
-    alert(error.message);
-  };
-
-  var captureImage = function() {
-    try {
-      navigator.device.capture.captureImage(captureSuccess, captureError, {limit: 1});
-    } catch (e) {
-      alert(e.message)
+  function initPhoneGap() {
+    if (!navigator.device || !navigator.device.capture) { return; }
+    imageCaptureSupported = true;
+    if (device.platform && device.platform == 'Android') {
+      $('body').addClass('android'); // Will hide back button
     }
   };
+  
+  initDevice = function() {
+    if (typeof(window.localStorage == 'object')) {
+      $('.foundTartan').click(tartanFound);
+      refreshTartans();
+      addResetButton();
+    }
+    // document.addEventListener('deviceready', initPhoneGap, false);
+    $(document).bind('deviceready', initPhoneGap);
+  };
+  $(document).ready(initDevice);
 
-  $('#camera').on('click', captureImage);
-}
+  refreshTartans = function() {
+    $('ul.details').each(function() {
+      var myID         = $(this).attr('id');
+      var tartanKey    = 'found-' + myID;
+      var foundValue   = localStorage.getItem(tartanKey);
+      var isFound      = Boolean (foundValue);
+      $('#vendor-'+ myID).toggleClass('found', isFound);
+      $('[data-url*="'+ myID +'"]').toggleClass('found', isFound);
+      $('#'+tartanKey).closest('li').toggle(!isFound);
+      var hasPhoto     = (isFound && foundValue != 'true') || false;
+      if (hasPhoto) {
+        if (!$(this).find('.tartanImage').length) {
+          var $tartanHolder = $('<p></p>').append($('<img>').attr({
+            'src'     : foundValue,
+            'class'   : 'tartanImage'
+          })); 
+          $(this).append('<li data-role="list-divider">My Photo of the Tartan!</li>');
+          $('<li></li>').append($tartanHolder).appendTo($(this));
+        }
+      }
+    });
+    $('ul').each(function() {
+      if ($(this).data('listview')) { $(this).listview('refresh'); }
+    });
+  };
+  
+  tartanFound = function(event) {
+    var tartanKey = $(event.currentTarget).attr('id');
+    if(imageCaptureSupported) {
+      navigator.device.capture.captureImage(function(mediaFiles) {
+        localStorage.setItem(tartanKey, mediaFiles[0].fullPath);
+        refreshTartans();
+      }, captureError, {limit:1});
+    }
+    else { 
+      localStorage.setItem(tartanKey, 'true');
+      refreshTartans(); 
+    }
+  };
+  captureError = function(error) { console.log(error);  }
+
+  addResetButton = function() {
+    var $resetButton = $('<a></a>').attr('data-role','button').html('Start Over!');
+    $resetButton.click(function() {
+      localStorage.clear();
+      refreshTartans();
+    });
+    $resetButton.appendTo($('#booths'));
+  };
+})();
