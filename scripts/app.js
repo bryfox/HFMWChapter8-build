@@ -19,8 +19,8 @@
       refreshTartans();
       addResetButton();
     }
-    // document.addEventListener('deviceready', initPhoneGap, false);
-    $(document).bind('deviceready', initPhoneGap);
+    document.addEventListener('deviceready', initPhoneGap, false);
+    // $(document).bind('deviceready', initPhoneGap);
   };
   $(document).ready(initDevice);
 
