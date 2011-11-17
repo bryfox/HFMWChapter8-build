@@ -6,6 +6,7 @@
   });
 
   function initPhoneGap() {
+console.log('initPhoneGap')
     if (!navigator.device || !navigator.device.capture) { return; }
     imageCaptureSupported = true;
     if (device.platform && device.platform == 'Android') {
@@ -19,8 +20,12 @@
       refreshTartans();
       addResetButton();
     }
-    document.addEventListener('deviceready', initPhoneGap, false);
-    // $(document).bind('deviceready', initPhoneGap);
+    // document.addEventListener('deviceready', initPhoneGap, false);
+    try {
+      $(document).bind('deviceready', initPhoneGap);
+    } catch (e) {
+      console.log(e)
+    }
   };
   $(document).ready(initDevice);
 
